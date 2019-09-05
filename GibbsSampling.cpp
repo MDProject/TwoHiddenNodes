@@ -14,7 +14,7 @@ void GibbsSamplingRBM(RBM* rbm, int NStep, int tag) {
 			double numerator = exp(0 - tmp);
 			double denominator = 2 * cosh(tmp);
 			double Prob = numerator / denominator;
-			double r = rand() / RAND_MAX;
+			double r = rand() / (double)RAND_MAX;
 			if (r < Prob) {
 				rbm->hnode[k] = 1;
 			}
@@ -35,7 +35,7 @@ void GibbsSamplingRBM(RBM* rbm, int NStep, int tag) {
 			double numerator = exp(0 - tmp);
 			double denominator = 2 * cosh(tmp);
 			double Prob = numerator / denominator;
-			double r = rand() / RAND_MAX;
+			double r = rand() / (double)RAND_MAX;
 			if (r < Prob) {
 				rbm->vnode[k] = 1;
 			}
@@ -53,7 +53,7 @@ void GibbsSamplingRBM(RBM* rbm, int NStep, int tag) {
 			double numerator = exp(0 - tmp);
 			double denominator = 2 * cosh(tmp);
 			double Prob = numerator / denominator;
-			double r = rand() / RAND_MAX;
+			double r = rand() / (double)RAND_MAX;
 			if (r < Prob) {
 				rbm->hnode[k] = 1;
 			}

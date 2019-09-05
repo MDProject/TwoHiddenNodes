@@ -1,7 +1,7 @@
 #include "RBMInterface.h"
 
 int rand1() {
-	double r = rand() / RAND_MAX;
+	double r = rand() / (double)RAND_MAX;
 	if (r > 0.5) {
 		return 1;
 	}
@@ -16,7 +16,7 @@ void GenerateWeightb(RBM* rbm, double q) {
 	for (int j = 0; j < Nv; j++) {
 		rbm->saveWeightb(0, j, rand1());
 		double ratio = 0.5*(1 + q);
-		if (rand() / RAND_MAX < ratio) {
+		if (rand() / (double)RAND_MAX < ratio) {
 			rbm->saveWeightb(1, j, rbm->weighAt(0, j));
 		}
 		else {
