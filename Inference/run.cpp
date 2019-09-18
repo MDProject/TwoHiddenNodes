@@ -15,9 +15,9 @@ void IterationMonitor(double** d, int Nd, int Nv) {
 }
 
 int main() {
-	int Nv = 900;
+	int Nv = 1500;
 	int Nh = 2;
-	int Nd = 200;
+	int Nd = 1200;
 	double q_drive = 0.2;
 	RBM* rbm = new RBM(Nh, Nv, 1, true);
 	// priori of true weight
@@ -27,7 +27,9 @@ int main() {
 	GenerateBiasH(rbm);
 	//GibbsSamplingRBM(rbm, 200, 0);
 	
-	double** sigma_data = GenerateData(rbm, Nd, 8000, 10, 0);
+	double** sigma_data;
+	//sigma_data = GenerateData(rbm, Nd, 8000, 10, 0);
+	GenerateDataSharedMem(rbm, Nd, 8000, 10, 0, &sigma_data, false);
 	double** m1, ** m2, ** q;
 	InitialOrderParameter(&m1, &m2, &q, Nd, Nv);
 	double** Qc, ** G1, **G2, **Gamma1, **Gamma2, **Zeta;

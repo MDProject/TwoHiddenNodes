@@ -66,3 +66,18 @@ double** GenerateData(RBM* rbm, int Nd, int NStep, int outFreq, int tag) {
 	}
 	return dataArray;
 }
+
+void GenerateDataSharedMem(RBM* rbm, int Nd, int NStep, int outFreq, int tag, double*** sigma_data, bool ifValid) {
+	int Nv = rbm->getVisibleNum();
+	if (!ifValid) {
+		(*sigma_data) = (double**)calloc(Nd, sizeof(double*));
+		for (int n = 0; n < Nd; n++) {
+			(*sigma_data)[n] = (double*)calloc(Nv, sizeof(double));
+		}
+	}
+	GibbsSamplingRBM(rbm, NStep, tag);
+	for (int n = 0; n < Nd; n++) {
+		GibbsSamplingRBM(rbm, outFreq, tag);
+		memcpy((*sigma_data)[n], rbm->vnode, Nv * sizeof(double));
+	}
+}

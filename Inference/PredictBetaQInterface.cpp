@@ -1,10 +1,10 @@
 #include "PredictBetaQInterface.h"
 
-double logZa(RBM* rbm, GaussianParameter* gp, OrderParameter* op, int dataIndex, double** sigma_data) {
+double GradlogZa(RBM* rbm, GaussianParameter* gp, OrderParameter* op, int dataIndex, double** sigma_data) {
 	double beta = rbm->beta;
 	int Nv = rbm->getVisibleNum();
-	double Phi2 = gp->Gamma2[dataIndex][0] + (1 - gp->G2[0][dataIndex] * gp->G2[0][dataIndex]) / Nv;
-	double Phi1 = gp->Gamma1[dataIndex][0] + (1 - gp->G1[0][dataIndex] * gp->G1[0][dataIndex]) / Nv;
+	double Phi2 = gp->Gamma2[dataIndex][0] + (1 - op->m2[0][dataIndex] * op->m2[0][dataIndex]) / Nv;
+	double Phi1 = gp->Gamma1[dataIndex][0] + (1 - op->m1[0][dataIndex] * op->m1[0][dataIndex]) / Nv;
 	double Ga1 = gp->G1[dataIndex][0] + sigma_data[dataIndex][0] * op->m1[0][dataIndex] / sqrt(Nv);
 	double Ga2 = gp->G2[dataIndex][0] + sigma_data[dataIndex][0] * op->m2[0][dataIndex] / sqrt(Nv);
 	double Za = gp->Zeta[dataIndex][0] + (op->q[0][dataIndex] - op->m1[0][dataIndex] * op->m2[0][dataIndex]) / Nv;
@@ -40,7 +40,7 @@ void AllocateMessageMatrixGradU(double***** du, int Nd, int Nv) {
 	}
 }
 
-void ComputeMessageMatrixGradU(RBM* rbm, double**** du, int Nd, int Nv, double** sigma_data, GaussianParameter* gp, OrderParameter* op) {
+void ComputeMessageMatrixGradU(RBM* rbm, double**** du, int Nd, int Nv, double** sigma_data, GaussianParameter* gp) {
 	double beta = rbm->beta;
 	// 0: -1,-1 [0][0]		1:	-1,1 [0][1]	2:	1,-1 [1][0]	3:	1,1 [1][1], consistent with u
 	for (int nd = 0; nd < Nd; nd++) {
@@ -82,13 +82,40 @@ void ComputeMessageMatrixGradU(RBM* rbm, double**** du, int Nd, int Nv, double**
 	}
 }
 
-double logZi(RBM* rbm, double**** u, double**** du, double q, int Nd, int vidx) {
+double GradlogZi(RBM* rbm, double**** u, double**** du, double**** expt, int Nd, int vidx) {
 	int Nv = rbm->getVisibleNum();
 	double dudbeta_0 = 0.;
 	double dudbeta_1 = 0.;
 	double dudbeta_2 = 0.;
 	double dudbeta_3 = 0.;
+	// 0: -1,-1 [0][0]		1:	-1,1 [0][1]	2:	1,-1 [1][0]	3:	1,1 [1][1]
 	for (int nd = 0; nd < Nd; nd++) {
-		
+		dudbeta_0 += du[nd][vidx][0][0];
+		dudbeta_1 += du[nd][vidx][0][1];
+		dudbeta_2 += du[nd][vidx][1][0];
+		dudbeta_3 += du[nd][vidx][1][1];
 	}
+	// using the shifted exponent tensor 'expt' to build current exponent tensor (make up for the deducted data node)
+	double expt0 = expt[vidx][0][0][0] + u[0][vidx][0][0];
+	double expt1 = expt[vidx][0][0][1] + u[0][vidx][0][1];
+	double expt2 = expt[vidx][0][1][0] + u[0][vidx][1][0];
+	double expt3 = expt[vidx][0][1][1] + u[0][vidx][1][1];
+	
+	double numerator = dudbeta_0 * exp(expt0) + dudbeta_1 * exp(expt1) + dudbeta_2 * exp(expt2) + dudbeta_3 * exp(expt3);
+	double denominator = exp(expt0) + exp(expt1) + exp(expt2) + exp(expt3);
+
+	return numerator / denominator;
 }
+
+double FeatureCorvariance(MessageParameter* mp, int vidx) {
+	double expt0 = mp->expt[vidx][0][0][0] + mp->u[0][vidx][0][0];
+	double expt1 = mp->expt[vidx][0][0][1] + mp->u[0][vidx][0][1];
+	double expt2 = mp->expt[vidx][0][1][0] + mp->u[0][vidx][1][0];
+	double expt3 = mp->expt[vidx][0][1][1] + mp->u[0][vidx][1][1];
+
+	double numerator = exp(expt0) - exp(expt1) - exp(expt2) + exp(expt3);
+	double denominator = exp(expt0) + exp(expt1) + exp(expt2) + exp(expt3);
+
+	return numerator / denominator; 
+}
+

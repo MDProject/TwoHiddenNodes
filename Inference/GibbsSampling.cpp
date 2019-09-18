@@ -10,6 +10,7 @@ void GibbsSamplingRBM(RBM* rbm, int NStep, int tag) {
 			for (int j = 0; j < Nv; j++) {
 				tmp += rbm->weighAt(k, j)*rbm->vnode[j];
 			}
+			tmp /= sqrt(Nv);
 			tmp += rbm->b[k];
 			double numerator = exp(0 - tmp);
 			double denominator = 2 * cosh(tmp);
@@ -31,6 +32,7 @@ void GibbsSamplingRBM(RBM* rbm, int NStep, int tag) {
 			for (int i = 0; i < Nh; i++) {
 				tmp += rbm->weighAt(i, k)*rbm->hnode[i];
 			}
+			tmp /= sqrt(Nv);
 			tmp += rbm->a[k];
 			double numerator = exp(0 - tmp);
 			double denominator = 2 * cosh(tmp);
@@ -49,6 +51,7 @@ void GibbsSamplingRBM(RBM* rbm, int NStep, int tag) {
 			for (int j = 0; j < Nv; j++) {
 				tmp += rbm->weighAt(k, j)*rbm->vnode[j];
 			}
+			tmp /= sqrt(Nv);
 			tmp += rbm->b[k];
 			double numerator = exp(0 - tmp);
 			double denominator = 2 * cosh(tmp);

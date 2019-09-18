@@ -1,5 +1,5 @@
-#ifndef DEFINE_PREDICT
-#define DEFINE_PREDICT
+#ifndef DEFINE_PREDICTINTERFACE
+#define DEFINE_PREDICTINTERFACE
 
 #include "MPInterface.h"
 #include "RBMInterface.h"
@@ -7,12 +7,13 @@
 #include <math.h>
 
 void AllocateMessageMatrixGradU(double***** du, int Nd, int Nv);
-void ComputeMessageMatrixGradU(RBM* rbm, double**** du, int Nd, int Nv, double** sigma_data, GaussianParameter* gp, OrderParameter* op);
+void ComputeMessageMatrixGradU(RBM* rbm, double**** du, int Nd, int Nv, double** sigma_data, GaussianParameter* gp);
 
-double logZa(RBM* rbm, GaussianParameter* gp, OrderParameter* op, int dataIndex, double** sigma_data);
+double GradlogZa(RBM* rbm, GaussianParameter* gp, OrderParameter* op, int dataIndex, double** sigma_data);
 
-double logZi(RBM* rbm, double**** u, double q);
+double GradlogZi(RBM* rbm, double**** u, double**** du, double**** expt, int Nd, int vidx);
 
-
+double FeatureCorvariance(MessageParameter* mp, int vidx);
 
 #endif
+

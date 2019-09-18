@@ -20,6 +20,11 @@ public:
 	double** m1, **m2, **q;
 };
 
+class MessageParameter {
+public:
+	double**** u, **** du, **** expt;
+};
+
 void InitialOrderParameter(double*** m1, double*** m2, double*** q, int Nd, int Nv);
 
 // Qc[data index][visible nodes index]
