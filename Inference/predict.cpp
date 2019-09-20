@@ -62,9 +62,7 @@ int main() {
 	// A complete iteration loop
 	double q_drive_guest = q_drive;
 	double beta_guest = 0.8;// rbm->beta;
-	double epsilon = 0.001;
 	double outPrev = -100000;
-	int MaxIter = 60;
 	for (int n = 0; n < 200; n++) {
 		rbm->setBeta(beta_guest);
 		double err = 100000.;

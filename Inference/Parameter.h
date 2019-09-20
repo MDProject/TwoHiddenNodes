@@ -9,5 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+extern int MaxIter;
+extern double epsilon;
 
 #endif
