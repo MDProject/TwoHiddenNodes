@@ -36,9 +36,15 @@ double Y0(double t, double x, double u, double u_prime, double* param) {
 }
 double X(double t, double x, double u, double u_prime, double* param) {
 	double sqrt_B = sqrt(B(param));
+	if (B(param) < 0) {
+		int a = 9;
+	}
 	return param[T1] * t + (param[tau2] - param[T1] * q) / sqrt(1 - q * q)*x + sqrt_B * u;
 }
 double Y(double t, double x, double u, double u_prime, double* param) {
+	if (C(param) < 0) {
+		int a = 9;
+	}
 	double sqrt_C = sqrt(C(param));
 	double sqrt_B = sqrt(B(param));
 	return param[tau1] * t + (param[T2] - param[tau1] * q) / sqrt(1 - q * q)*x + (param[r] - A(param)) / sqrt_B * u + sqrt_C * u_prime;

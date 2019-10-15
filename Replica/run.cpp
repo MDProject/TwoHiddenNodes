@@ -2,6 +2,7 @@
 #include "Integrator.h"
 #include <iostream>
 #include "Define.h"
+#include "FreeEnergy.h"
 
 // recursion start from [T1,T2,tau1,tau2,q1,q2,R,r] 
 
@@ -31,11 +32,15 @@ int InitialParam(double* param) {
 	return ac;
 }
 
+void ShowFreeEnergy(double f) {
+	std::cout << "free energy:\t" << f << std::endl;
+}
+
 int main() {
 	double Param[8] = { 0.697737, 0.698987, 0.667203, 0.669043, 0.70419, 0.703036, 0.539728, 0.685023 };
 	double Param_hat[8] = { 0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5 };
-	int N = 200;
-	int loop = 400000;
+	int N = 20;
+	int loop = 300000;
 	srand((unsigned)time(NULL));
 	int ns = InitialParam(Param);
 	std::cout << "Loop " << ns << "times to get initial order parameters" << std::endl;
@@ -75,5 +80,7 @@ int main() {
 		Param[r] = 0.;*/
 		PrintInfo(Param, Param_hat);
 	}
+	double free_energy = CalculateFreeEnergy(Param, Param_hat, loop);
+	ShowFreeEnergy(free_energy);
 	system("pause");
 }
