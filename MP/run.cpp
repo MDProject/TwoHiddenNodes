@@ -35,9 +35,9 @@ void ShowFreeEnergy(double f) {
 }
 
 int main() {
-	int Nv = 200;
+	int Nv = 500;
 	int Nh = 2;
-	int Nd = Nv*2;
+	int Nd = Nv*0.25;
 	double q_drive = 0.3;
 	RBM* rbm = new RBM(Nh, Nv, 1, true);
 	// priori of true weight
