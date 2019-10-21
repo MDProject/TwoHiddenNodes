@@ -48,8 +48,8 @@ void ComputeMessageMatrixGradU(RBM* rbm, double**** du, int Nd, int Nv, double**
 			double phi = gp->Zeta[nd][nv] / sqrt(gp->Gamma1[nd][nv] * gp->Gamma2[nd][nv]);
 			double term1 = beta * gp->Gamma2[nd][nv] * (1. - phi * phi);
 			
-			double term2_0 = 2.*beta*(gp->Qc[nd][nv] + 1 / Nv)*tanh(beta*beta*(gp->Qc[nd][nv] + 1 / Nv));
-			double term2_1 = 2.*beta*(gp->Qc[nd][nv] - 1 / Nv)*tanh(beta*beta*(gp->Qc[nd][nv] - 1 / Nv));
+			double term2_0 = 2.*beta*(gp->Qc[nd][nv] + 1. / Nv)*tanh(beta*beta*(gp->Qc[nd][nv] + 1. / Nv));
+			double term2_1 = 2.*beta*(gp->Qc[nd][nv] - 1. / Nv)*tanh(beta*beta*(gp->Qc[nd][nv] - 1. / Nv));
 			double term2_2 = term2_1;
 			double term2_3 = term2_0;
 

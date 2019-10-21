@@ -119,7 +119,7 @@ double ComputeMessageU(RBM* rbm, double** sigma_data, GaussianParameter* op, int
 	double phi = op->Zeta[nb][i] / sqrt(op->Gamma1[nb][i] * op->Gamma2[nb][i]);
 	double term1 = rbm->beta*rbm->beta*op->Gamma2[nb][i] * (1 - phi * phi) / 2.;
 
-	double tmp = op->Qc[nb][i] + xi1 * xi2 / Nv;
+	double tmp = op->Qc[nb][i] + double(xi1 * xi2) / Nv;
 	double term2 = log(2 * cosh(rbm->beta*rbm->beta*tmp));
 
 	double term3 = rbm->beta*rbm->beta*pow(sqrt(op->Gamma1[nb][i]) + sqrt(op->Gamma2[nb][i])*phi, 2.) / 2.;

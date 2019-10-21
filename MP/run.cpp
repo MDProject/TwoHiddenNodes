@@ -16,6 +16,18 @@ void IterationMonitor(double** d, int Nd, int Nv) {
 	std::cout << d[i0][j0] << " " << d[i1][j1] << " " << d[i2][j2] << " " << d[i3][j3] << " " << d[i4][j4] << " " << d[i5][j5] << " " << d[i6][j6] << " " << d[i7][j7] << std::endl;
 }
 
+void CalcuateQTrue(RBM* rbm) {
+	int Nv = rbm->getVisibleNum();
+	double q_true = 0.;
+	for (int i = 0; i < Nv; i++) {
+		q_true += rbm->weighAt(0, i)*rbm->weighAt(1, i);
+	}
+	q_true /= Nv;
+	std::cout << "true q\t" << q_true << std::endl;
+	double alpha_c = rbm->beta*rbm->beta / (1 + abs(q_true)) / (1 + abs(q_true)) / (1 + abs(tanh(rbm->beta*rbm->beta*q_true))) / (1 + abs(tanh(rbm->beta*rbm->beta*q_true)));
+	std::cout << "critical alpha_c\t" << alpha_c << std::endl;
+}
+
 void ShowOrderParameter(double* op, int N) {
 	for (int i = 0; i < N; i++) {
 		std::cout << op[i] << "***";
@@ -35,13 +47,14 @@ void ShowFreeEnergy(double f) {
 }
 
 int main() {
-	int Nv = 500;
+	int Nv = 400;
 	int Nh = 2;
-	int Nd = Nv*0.25;
+	int Nd = 1000;
 	double q_drive = 0.3;
 	RBM* rbm = new RBM(Nh, Nv, 1, true);
 	// priori of true weight
 	GenerateWeightb(rbm, q_drive);
+	CalcuateQTrue(rbm);
 	GenerateHNode(rbm);
 	GenerateBiasV(rbm);         
 	GenerateBiasH(rbm);
@@ -63,7 +76,7 @@ int main() {
 	AllocateMessageMatrixU(rbm, Nd, &u);
 	IterationMonitor(m1, Nd, Nv);
 	// A complete iteration loop
-	for (int n = 0; n < 70; n++) {
+	for (int n = 0; n < 100; n++) {
 		ComputeCavityQ(q, Nv, Nd, Qc);
 		ComputeMeanMatrix(sigma_data, m1, m2, Nd, Nv, G1, G2);
 		ComputeVarianceMatrix(m1, m2, Nd, Nv, Gamma1, Gamma2);
