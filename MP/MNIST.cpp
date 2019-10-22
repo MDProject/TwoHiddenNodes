@@ -30,7 +30,8 @@ void FreeMnistImgMemory(double*** img_data, int Nimg, int Nrow, int Ncol) {
 	free(img_data);
 }
 
-void MNISTLoader(const std::string& img_path, double**** img_data) {
+int MnistImageLoader(const std::string& img_path, double**** img_data) {
+	int NumOfImg = 0;
 	std::ifstream file(img_path, std::ios::binary);
 	if (file.is_open())
 	{
@@ -42,6 +43,7 @@ void MNISTLoader(const std::string& img_path, double**** img_data) {
 		magic_number = ReverseInt(magic_number);
 		file.read((char*)&number_of_images, sizeof(number_of_images));
 		number_of_images = ReverseInt(number_of_images);
+		NumOfImg = number_of_images;
 		file.read((char*)&n_rows, sizeof(n_rows));
 		n_rows = ReverseInt(n_rows);
 		file.read((char*)&n_cols, sizeof(n_cols));
@@ -64,4 +66,79 @@ void MNISTLoader(const std::string& img_path, double**** img_data) {
 		std::cout << "Fault file path input!" << std::endl;
 		system("pause");
 	}
+	file.close();
+	return NumOfImg;
+}
+
+void AllocateLabelMemory(unsigned int** label_data, int Nimg) {
+	(*label_data) = (unsigned int*)malloc(Nimg * sizeof(unsigned int));
+}
+
+void FreeMnistLabelMemory(unsigned int* label_data) {
+	free(label_data);
+}
+
+void MnistLabelLoader(const std::string& img_path, unsigned int** label_data) {
+	std::ifstream file(img_path, std::ios::binary);
+	if (file.is_open())
+	{
+		int magic_number = 0;
+		int number_of_images = 0;
+		file.read((char*)&magic_number, sizeof(magic_number));
+		magic_number = ReverseInt(magic_number);
+		file.read((char*)&number_of_images, sizeof(number_of_images));
+		number_of_images = ReverseInt(number_of_images);
+		char label;
+		AllocateLabelMemory(label_data, number_of_images);
+		for (int i = 0; i < number_of_images; i++)
+		{
+			file.read(&label, sizeof(label));
+			(*label_data)[i] = (unsigned int)label;
+		}
+	}
+	else {
+		std::cout << "Fault file path input!" << std::endl;
+		system("pause");
+	}
+	file.close();
+}
+
+void AllocateAssignDataMemory(double*** assign_data, int Nimg, int Nv) {
+	(*assign_data) = (double**)malloc(Nimg * sizeof(double*));
+	for (int n = 0; n < Nimg; n++) {
+		(*assign_data)[n] = (double*)calloc(Nv, sizeof(double));
+	}
+}
+
+int ExtractAssignedData(unsigned int* assign_label, int n_label, double*** img_data, unsigned int* label_data, int Nimg, int Nrow, int Ncol, double*** assign_data) {
+	int Nimg_assign = 0;
+	for (int n = 0; n < Nimg; n++) {
+		for (int ac = 0; ac < n_label; ac++) {
+			if (label_data[n] == assign_label[ac]) {
+				Nimg_assign++;
+			}
+		}
+	}
+	AllocateAssignDataMemory(assign_data, Nimg_assign, Nrow*Ncol);
+	int img_assign_idx = 0;
+	for (int n = 0; n < Nimg; n++) {
+		for (int ac = 0; ac < n_label; ac++) {
+			if (label_data[n] == assign_label[ac]) {
+				for (int n_row = 0; n_row < Nrow; n_row++) {
+					for (int n_col = 0; n_col < Ncol; n_col++) {
+						(*assign_data)[img_assign_idx][n_row*Nrow + n_col] = img_data[n][n_row][n_col];
+					}
+				}
+				img_assign_idx++;
+			}
+		}
+	}
+	return Nimg_assign;
+}
+
+void FreeAssignedDataMemory(double** assign_data, int Nimg) {
+	for (int n = 0; n < Nimg; n++) {
+		free(assign_data[n]);
+	}
+	free(assign_data);
 }
