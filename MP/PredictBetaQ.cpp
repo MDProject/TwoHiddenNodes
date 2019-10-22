@@ -12,14 +12,15 @@ double IterateBeta(RBM* rbm, GaussianParameter* gp, OrderParameter* op, MessageP
 		Fas += GradlogZa(rbm, gp, op, na, sigma_data);
 	}
 	double beta_new = (Fis - (Nv - 1)*Fas) / 2. / Nd;
-	return beta_new;
+	return eta * beta + (1 - eta)*beta_new;
 }
 
-double IterateQ(MessageParameter* mp, RBM* rbm) {
+double IterateQ(MessageParameter* mp, RBM* rbm, double q_odd) {
 	int Nv = rbm->getVisibleNum();
 	double Q = 0.;
 	for (int i = 0; i < Nv; i++) {
 		Q += FeatureCorvariance(mp, i);
 	}
-	return Q / (double)Nv;
+	Q = Q / (double)Nv;
+	return eta * q_odd + (1 - eta)*Q;
 }

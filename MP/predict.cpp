@@ -91,13 +91,15 @@ int main() {
 			ac++;
 			if (ac > MaxIter) {
 				IterationMonitor(m1, Nd, Nv);
+				std::cout << "Exceed maximum iteration steps!" << std::endl;
+				system("pause");
 			}
 		}
 		IterationMonitor(m1, Nd, Nv);
 
 		beta_guest = IterateBeta(rbm, &GP, &OP, &MP, Nd, sigma_data);
 		rbm->setBeta(beta_guest);
-		q_drive_guest = IterateQ(&MP, rbm);
+		q_drive_guest = IterateQ(&MP, rbm, q_drive_guest);
 		std::cout << "Beta: " << beta_guest << "     " << "q:	" << q_drive_guest << std::endl;
 	}
 	system("pause");

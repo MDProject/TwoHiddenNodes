@@ -5,6 +5,6 @@
 
 double IterateBeta(RBM* rbm, GaussianParameter* gp, OrderParameter* op, MessageParameter* mp, int Nd, double** sigma_data);
 
-double IterateQ(MessageParameter* mp, RBM* rbm);
+double IterateQ(MessageParameter* mp, RBM* rbm, double q_odd);
 
 #endif
