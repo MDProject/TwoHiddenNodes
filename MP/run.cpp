@@ -47,6 +47,7 @@ void ShowFreeEnergy(double f) {
 }
 
 int main() {
+	srand((unsigned)time(NULL));
 	int Nv = 400;
 	int Nh = 2;
 	int Nd = 1000;

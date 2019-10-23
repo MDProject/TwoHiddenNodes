@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string>
 #include <fstream>
+#include <time.h>
 
 extern int MaxIter;
 extern double epsilon;

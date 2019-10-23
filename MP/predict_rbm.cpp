@@ -1,6 +1,8 @@
 #include "RBMInterface.h"
 #include "MPInterface.h"
 #include "PredictBetaQ.h"
+#include <time.h> 
+
 
 void IterationMonitor(double** d, int Nd, int Nv) {
 	// observe the behavior of order parameter 
@@ -28,6 +30,7 @@ double IterationTagPerStep(double** d, int Nd, int Nv) {
 }
 
 int main() {
+	srand((unsigned)time(NULL));
 	int Nv = 1500;
 	int Nh = 2;
 	int Nd = 1300;
