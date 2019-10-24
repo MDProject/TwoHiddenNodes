@@ -1,4 +1,5 @@
 #include "PredictBetaQInterface.h"
+#include <limits>
 
 double GradlogZa(RBM* rbm, GaussianParameter* gp, OrderParameter* op, int dataIndex, double** sigma_data) {
 	double beta = rbm->beta;
@@ -9,7 +10,10 @@ double GradlogZa(RBM* rbm, GaussianParameter* gp, OrderParameter* op, int dataIn
 	double Ga2 = gp->G2[dataIndex][0] + sigma_data[dataIndex][0] * op->m2[0][dataIndex] / sqrt(Nv);
 	double Za = gp->Zeta[dataIndex][0] + (op->q[0][dataIndex] - op->m1[0][dataIndex] * op->m2[0][dataIndex]) / Nv;
 	double phi = Za / sqrt(Phi2*Phi1);
-
+	if (Phi1 < 0 || Phi2 < 0) {
+		std::cout << "negtive root" << std::endl;
+		system("pause");
+	}
 	double term1 = beta * Phi2*(1 - phi * phi);
 	
 	double qs = (gp->Qc[dataIndex][0] + op->q[0][dataIndex] / Nv);
@@ -46,6 +50,10 @@ void ComputeMessageMatrixGradU(RBM* rbm, double**** du, int Nd, int Nv, double**
 	for (int nd = 0; nd < Nd; nd++) {
 		for (int nv = 0; nv < Nv; nv++) {
 			double phi = gp->Zeta[nd][nv] / sqrt(gp->Gamma1[nd][nv] * gp->Gamma2[nd][nv]);
+			if (phi >= std::numeric_limits<double>::max()) {
+				std::cout << "negtive root" << std::endl;
+				system("pause");
+			}
 			double term1 = beta * gp->Gamma2[nd][nv] * (1. - phi * phi);
 			
 			double term2_0 = 2.*beta*(gp->Qc[nd][nv] + 1. / Nv)*tanh(beta*beta*(gp->Qc[nd][nv] + 1. / Nv));
@@ -100,7 +108,27 @@ double GradlogZi(RBM* rbm, double**** u, double**** du, double**** expt, int Nd,
 	double expt1 = expt[vidx][0][0][1] + u[0][vidx][0][1];
 	double expt2 = expt[vidx][0][1][0] + u[0][vidx][1][0];
 	double expt3 = expt[vidx][0][1][1] + u[0][vidx][1][1];
-	
+
+	// *****	substract max value	*****
+	double max_expt = 0.;
+	if (expt0 > max_expt) {
+		max_expt = expt0;
+	}
+	if (expt1 > max_expt) {
+		max_expt = expt1;
+	}
+	if (expt2 > max_expt) {
+		max_expt = expt2;
+	}
+	if (expt3 > max_expt) {
+		max_expt = expt3;
+	}
+	expt0 -= max_expt;
+	expt1 -= max_expt;
+	expt2 -= max_expt;
+	expt3 -= max_expt;
+	// *****	******	*****
+
 	double numerator = dudbeta_0 * exp(expt0) + dudbeta_1 * exp(expt1) + dudbeta_2 * exp(expt2) + dudbeta_3 * exp(expt3);
 	double denominator = exp(expt0) + exp(expt1) + exp(expt2) + exp(expt3);
 
@@ -112,6 +140,26 @@ double FeatureCorvariance(MessageParameter* mp, int vidx) {
 	double expt1 = mp->expt[vidx][0][0][1] + mp->u[0][vidx][0][1];
 	double expt2 = mp->expt[vidx][0][1][0] + mp->u[0][vidx][1][0];
 	double expt3 = mp->expt[vidx][0][1][1] + mp->u[0][vidx][1][1];
+
+	// *****	substract max value	*****
+	double max_expt = 0.;
+	if (expt0 > max_expt) {
+		max_expt = expt0;
+	}
+	if (expt1 > max_expt) {
+		max_expt = expt1;
+	}
+	if (expt2 > max_expt) {
+		max_expt = expt2;
+	}
+	if (expt3 > max_expt) {
+		max_expt = expt3;
+	}
+	expt0 -= max_expt;
+	expt1 -= max_expt;
+	expt2 -= max_expt;
+	expt3 -= max_expt;
+	// *****	******	*****
 
 	double numerator = exp(expt0) - exp(expt1) - exp(expt2) + exp(expt3);
 	double denominator = exp(expt0) + exp(expt1) + exp(expt2) + exp(expt3);

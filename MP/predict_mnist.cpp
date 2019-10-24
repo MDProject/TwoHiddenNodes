@@ -29,6 +29,7 @@ double IterationTagPerStep(double** d, int Nd, int Nv) {
 }
 
 int main() {
+	srand((unsigned)time(NULL));
 	int Nv = 28*28;
 	int Nh = 2;
 	int Nd = 0;
@@ -43,18 +44,22 @@ int main() {
 
 	std::string img_path = "D:\\DeepLearning\\Application\\MNIST_DATA\\MNIST\\raw\\train-images-idx3-ubyte";
 	std::string idx_path = "D:\\DeepLearning\\Application\\MNIST_DATA\\MNIST\\raw\\train-labels-idx1-ubyte";
+	
+	// **********************************
 	double** sigma_data;
 	double*** img_data;
 	unsigned int* label_data;
-	unsigned int assign_label[] = { 0 };
+	unsigned int assign_label[] = { 0,1,2,3 };
+	int num_list[] = { 100,100,100,100 };
+	Nd = 400;
+	
 	int Nimg = MnistImageLoader(img_path, &img_data);
 	MnistLabelLoader(idx_path, &label_data);
-	int Nimg_assign = ExtractAssignedData(assign_label, 1, img_data, label_data, Nimg, 28, 28, &sigma_data);
-	Nd = Nimg_assign;
+	ExtractAssignedData(assign_label, num_list,2, img_data, label_data, Nimg, 28, 28, &sigma_data);
+	CompressData2Binary(sigma_data, Nd, 28 * 28, 125);
 	FreeMnistImgMemory(img_data, 60000, 28, 28);
 	FreeMnistLabelMemory(label_data);
-
-
+	// ***********************************
 	double** m1, ** m2, ** q;
 	InitialOrderParameter(&m1, &m2, &q, Nd, Nv);
 	double** Qc, ** G1, **G2, **Gamma1, **Gamma2, **Zeta;

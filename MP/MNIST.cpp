@@ -110,30 +110,28 @@ void AllocateAssignDataMemory(double*** assign_data, int Nimg, int Nv) {
 	}
 }
 
-int ExtractAssignedData(unsigned int* assign_label, int n_label, double*** img_data, unsigned int* label_data, int Nimg, int Nrow, int Ncol, double*** assign_data) {
+void ExtractAssignedData(unsigned int* assign_label, int* num_list, int n_label, double*** img_data, unsigned int* label_data, int Nimg, int Nrow, int Ncol, double*** assign_data) {
 	int Nimg_assign = 0;
-	for (int n = 0; n < Nimg; n++) {
-		for (int ac = 0; ac < n_label; ac++) {
-			if (label_data[n] == assign_label[ac]) {
-				Nimg_assign++;
-			}
-		}
+	for (int n = 0; n < n_label; n++) {
+		Nimg_assign += num_list[n];
 	}
 	AllocateAssignDataMemory(assign_data, Nimg_assign, Nrow*Ncol);
-	int img_assign_idx = 0;
+	int* img_assign_idx = (int*)calloc(n_label, sizeof(int));
+	int img_assign_idxs = 0;
 	for (int n = 0; n < Nimg; n++) {
 		for (int ac = 0; ac < n_label; ac++) {
-			if (label_data[n] == assign_label[ac]) {
+			if (label_data[n] == assign_label[ac]&&img_assign_idx[ac]<num_list[ac]) {
 				for (int n_row = 0; n_row < Nrow; n_row++) {
 					for (int n_col = 0; n_col < Ncol; n_col++) {
-						(*assign_data)[img_assign_idx][n_row*Nrow + n_col] = img_data[n][n_row][n_col];
+						(*assign_data)[img_assign_idxs][n_row*Nrow + n_col] = img_data[n][n_row][n_col];
 					}
 				}
-				img_assign_idx++;
+				img_assign_idx[ac]++;
+				img_assign_idxs++;
 			}
 		}
 	}
-	return Nimg_assign;
+	free(img_assign_idx);
 }
 
 void FreeAssignedDataMemory(double** assign_data, int Nimg) {
@@ -141,4 +139,17 @@ void FreeAssignedDataMemory(double** assign_data, int Nimg) {
 		free(assign_data[n]);
 	}
 	free(assign_data);
+}
+
+void CompressData2Binary(double** assign_data, int Nimg, int n_pixel, int threshold) {
+	for (int n = 0; n < Nimg; n++) {
+		for (int i = 0; i < n_pixel; i++) {
+			if (assign_data[n][i] > threshold) {
+				assign_data[n][i] = 1;
+			}
+			else {
+				assign_data[n][i] = -1;
+			}
+		}
+	}
 }
